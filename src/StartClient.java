@@ -106,7 +106,7 @@ public class StartClient implements Constantes {
 		
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Insira o numero do usuario que voce deseja conversar: ");
-		Integer numero = scanner.nextInt();
+		Integer numero = scanner.nextInt() - 1;
 		
 		try {
 			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
