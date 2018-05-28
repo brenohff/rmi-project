@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -74,8 +75,7 @@ public class StartClient implements Constantes {
 		}
 	}
 
-	private static ImplServer conectar(String endpoint)
-			throws MalformedURLException, RemoteException, NotBoundException {
+	private static ImplServer conectar(String endpoint) throws MalformedURLException, RemoteException, NotBoundException {
 		return (ImplServer) Naming.lookup(ENDPOINT + endpoint);
 	}
 
@@ -94,7 +94,7 @@ public class StartClient implements Constantes {
 		System.out.println("||---------------------------------------||");
 	}
 
-	private void usuariosOnline(ImplServer b) throws RemoteException {
+	private void usuariosOnline(ImplServer b) throws RemoteException, MalformedURLException, NotBoundException, AlreadyBoundException {
 		cc = b.getCC();
 		List<ImplClient> clients = new ArrayList<>();
 		int count = 1;
@@ -103,6 +103,24 @@ public class StartClient implements Constantes {
 			System.out.println(count + " - " + usuario.getKey());
 			count++;
 		}
+		
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Insira o numero do usuario que voce deseja conversar: ");
+		Integer numero = scanner.nextInt();
+		
+		try {
+			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
+			chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
+			chat.login(chat, b);
+		} catch (Exception e) {
+			Naming.bind(clients.get(numero).getNomeUsuario().toLowerCase(), new Server());
+			b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
+			b.logout(chat.user.getNomeUsuario());
+			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
+			chat = new StartClient(new Client(chat.user.getNomeUsuario()));
+			chat.login(chat, b);
+		}
+		
 	}
 
 	@SuppressWarnings("resource")
