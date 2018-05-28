@@ -5,11 +5,16 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class ChatUI implements Constantes {
 
 	private ChatClient user;
 	private static ChatUI chat;
+	private HashMap<String, IChatClient> cc;
 
 	public ChatUI(ChatClient user) {
 		this.user = user;
@@ -42,6 +47,7 @@ public class ChatUI implements Constantes {
 					chat.login(chat, b);
 					break;
 				case "/chatPrivado":
+					chat.usuariosOnline(b);
 					break;
 				case "/sair":
 					b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
@@ -67,10 +73,21 @@ public class ChatUI implements Constantes {
 
 	private void mostraMenu() {
 		System.out.println("||--------------------------------------||");
-		System.out.println("||/menu -> Mostra menu                  ||");
+		System.out.println("||/menu        -> Mostra menu           ||");
 		System.out.println("||/chatPublico -> Inicia o chat publico ||");
 		System.out.println("||/chatPrivado -> Inicia o chat privado ||");
-		System.out.println("||/sair -> Sai do programa              ||");
+		System.out.println("||/sair        -> Sai do programa       ||");
 		System.out.println("||--------------------------------------||");
+	}
+
+	private void usuariosOnline(IBoard b) throws RemoteException {
+		cc = b.getCC();
+		List<IChatClient> clients = new ArrayList<>();
+		int count = 1;
+		for (Entry<String, IChatClient> usuario : cc.entrySet()) {
+			clients.add(usuario.getValue());
+			System.out.println(count + " - " + usuario.getKey());
+			count++;
+		}
 	}
 }

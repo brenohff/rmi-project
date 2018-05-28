@@ -53,4 +53,11 @@ public class Board extends UnicastRemoteObject implements IBoard {
 		}
 		return false;
 	}
+
+	@Override
+	public HashMap<String, IChatClient> getCC() throws RemoteException {
+		return cc;
+	}
+	
+	
 }

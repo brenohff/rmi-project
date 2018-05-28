@@ -1,5 +1,6 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 public interface IBoard extends Remote {
 
@@ -10,4 +11,6 @@ public interface IBoard extends Remote {
 	public void logout(String nomeUsuario) throws RemoteException;
 	
 	public boolean podeLogar(String nomeUsuario) throws RemoteException;
+	
+	public HashMap<String, IChatClient> getCC() throws RemoteException;
 }
