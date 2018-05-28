@@ -18,10 +18,11 @@ public class Board extends UnicastRemoteObject implements IBoard {
 	public void postMessage(String msg, IChatClient userWhoSent) throws RemoteException {
 		Collection<IChatClient> usersOnline = cc.values();
 		Iterator<IChatClient> iter = usersOnline.iterator();
+		
 		while (iter.hasNext()) {
 			IChatClient icc = (IChatClient) iter.next();
-			if (!userWhoSent.equals(cc.get(icc.getAlias()))) {
-				icc.viewBoardMsg(userWhoSent.getAlias() + " disse: " + msg);
+			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
+				icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
 			}
 		}
 	}

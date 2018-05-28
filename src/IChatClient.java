@@ -5,5 +5,5 @@ public interface IChatClient extends Remote {
 
 	public void viewBoardMsg(String msg) throws RemoteException;
 
-	public String getAlias() throws RemoteException;
+	public String getNomeUsuario() throws RemoteException;
 }

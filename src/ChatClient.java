@@ -5,15 +5,15 @@ import java.rmi.server.UnicastRemoteObject;
 public class ChatClient extends UnicastRemoteObject implements IChatClient {
 	private static final long serialVersionUID = 6322158345847138669L;
 	
-	private String alias;
+	private String nomeUsuario;
 
-	public ChatClient(String alias) throws RemoteException {
-		this.alias = alias;
+	public ChatClient(String nomeUsuario) throws RemoteException {
+		this.nomeUsuario = nomeUsuario;
 	}
 
 	@Override
-	public String getAlias() throws RemoteException {
-		return alias;
+	public String getNomeUsuario() throws RemoteException {
+		return nomeUsuario;
 	}
 
 	@Override
