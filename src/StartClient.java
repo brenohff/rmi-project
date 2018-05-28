@@ -21,6 +21,8 @@ public class StartClient implements Constantes {
 	private static StartClient chat;
 	private HashMap<String, ImplClient> cc;
 	private static ImplServer b;
+	
+	private static String teste = "";
 
 	public StartClient(Client user) {
 		this.user = user;
@@ -68,6 +70,7 @@ public class StartClient implements Constantes {
 					System.exit(1);
 					break;
 				default:
+					System.out.println(teste);
 					b.postMessage(mensagem, chat.user);
 					break;
 				}
@@ -76,6 +79,7 @@ public class StartClient implements Constantes {
 	}
 
 	private static ImplServer conectar(String endpoint) throws MalformedURLException, RemoteException, NotBoundException {
+		teste = ENDPOINT + endpoint;
 		return (ImplServer) Naming.lookup(ENDPOINT + endpoint);
 	}
 
@@ -113,7 +117,7 @@ public class StartClient implements Constantes {
 			chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
 			chat.login(chat, b);
 		} catch (Exception e) {
-			Naming.bind(clients.get(numero).getNomeUsuario().toLowerCase(), new Server());
+			Naming.rebind(clients.get(numero).getNomeUsuario().toLowerCase(), new Server());
 			b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
 			b.logout(chat.user.getNomeUsuario());
 			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
