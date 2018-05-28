@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 public class ChatUI implements Constantes {
 
 	private ChatClient user;
+	private static ChatUI chat;
 
 	public ChatUI(ChatClient user) {
 		this.user = user;
@@ -19,8 +20,15 @@ public class ChatUI implements Constantes {
 		IBoard b = conectar("chat");
 
 		System.out.print("Insira seu usuario: ");
-		ChatUI chat = new ChatUI(new ChatClient(input.readLine()));
-		chat.login(chat, b);
+		String nomeUsuario = input.readLine();
+		if (b.podeLogar(nomeUsuario)) {
+			chat = new ChatUI(new ChatClient(nomeUsuario));
+			chat.login(chat, b);
+			b.postMessage(chat.user.getNomeUsuario() + " entrou no chat/entrou", chat.user);
+		} else {
+			System.out.println("Encerrando sessao... (ja existe um usuario com este nome na sessao)");
+			System.exit(1);
+		}
 
 		while (true) {
 			String mensagem = input.readLine();
@@ -36,7 +44,7 @@ public class ChatUI implements Constantes {
 				case "/chatPrivado":
 					break;
 				case "/sair":
-					System.out.println(chat.user.getNomeUsuario() + " saiu do chat");
+					b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
 					b.logout(chat.user.getNomeUsuario());
 					input.close();
 					System.exit(1);
@@ -55,7 +63,6 @@ public class ChatUI implements Constantes {
 
 	private void login(ChatUI chat, IBoard b) throws RemoteException {
 		b.login(chat.user.getNomeUsuario(), chat.user);
-		System.out.println("Usuario " + chat.user.getNomeUsuario() + " entrou!");
 	}
 
 	private void mostraMenu() {

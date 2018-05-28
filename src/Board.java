@@ -18,24 +18,39 @@ public class Board extends UnicastRemoteObject implements IBoard {
 	public void postMessage(String msg, IChatClient userWhoSent) throws RemoteException {
 		Collection<IChatClient> usersOnline = cc.values();
 		Iterator<IChatClient> iter = usersOnline.iterator();
-		
+
 		while (iter.hasNext()) {
 			IChatClient icc = (IChatClient) iter.next();
 			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
-				icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
+				if (msg.endsWith("saiu do chat/deixou") || msg.endsWith("entrou no chat/entrou")) {
+					icc.viewBoardMsg(msg.substring(0, msg.length() - 7));
+				} else {
+					icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
+				}
 			}
 		}
 	}
 
 	@Override
-	public void login(String alias, IChatClient c) throws RemoteException {
-		cc.put(alias, c);
-		System.out.println(alias + " entrou - Usuarios online: " + cc.size());
+	public void login(String nomeUsuario, IChatClient c) throws RemoteException {
+		cc.put(nomeUsuario, c);
+		System.out.println(nomeUsuario + " entrou - Usuarios online: " + cc.size());
+
 	}
 
 	@Override
-	public void logout(String alias) throws RemoteException {
-		cc.remove(alias);
-		System.out.println(alias + " saiu - Usuarios online: " + cc.size());
+	public void logout(String nomeUsuario) throws RemoteException {
+		cc.remove(nomeUsuario);
+		System.out.println(nomeUsuario + " saiu - Usuarios online: " + cc.size());
+	}
+
+	@Override
+	public boolean podeLogar(String nomeUsuario) {
+		if (!cc.containsKey(nomeUsuario)) {
+			return true;
+		} else {
+			System.out.printf("Ja existe um usuario com o nome de \"%s\" na sessao.", nomeUsuario);
+		}
+		return false;
 	}
 }
