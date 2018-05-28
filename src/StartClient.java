@@ -1,5 +1,8 @@
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -16,6 +19,7 @@ public class StartClient implements Constantes {
 	private Client user;
 	private static StartClient chat;
 	private HashMap<String, ImplClient> cc;
+	private static ImplServer b;
 
 	public StartClient(Client user) {
 		this.user = user;
@@ -23,7 +27,7 @@ public class StartClient implements Constantes {
 
 	public static void main(String args[]) throws Exception {
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		ImplServer b = conectar("chat");
+		b = conectar("chat");
 
 		System.out.print("Insira seu usuario: ");
 		String nomeUsuario = input.readLine();
@@ -52,6 +56,9 @@ public class StartClient implements Constantes {
 					break;
 				case "/enviaArquivo":
 					chat.enviaArquivo(b);
+					break;
+				case "/abreArquivo":
+					chat.abreArquivo();
 					break;
 				case "/sair":
 					b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
@@ -82,6 +89,7 @@ public class StartClient implements Constantes {
 		System.out.println("||/chatPublico  -> Inicia o chat publico ||");
 		System.out.println("||/chatPrivado  -> Inicia o chat privado ||");
 		System.out.println("||/enviaArquivo -> Enviar arquivo        ||");
+		System.out.println("||/abreArquivo   -> Abre arquivo         ||");
 		System.out.println("||/sair         -> Sai do programa       ||");
 		System.out.println("||---------------------------------------||");
 	}
@@ -101,7 +109,35 @@ public class StartClient implements Constantes {
 	private void enviaArquivo(ImplServer b) throws RemoteException {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Insira o path do arquivo: ");
+		
+		String pathCompleto = scanner.nextLine();
 
-		b.enviaArquivo(user, scanner.nextLine());
+		b.enviaArquivo(user, pathCompleto);
+		String[] file = pathCompleto.split("\\\\");
+		b.postMessage("Abra o arquivo " + file[file.length - 1], user);
+	}
+
+	@SuppressWarnings("resource")
+	private void abreArquivo() throws IOException {
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Insira o path do arquivo: ");
+
+		File file = new File(scanner.nextLine());
+
+		if (!Desktop.isDesktopSupported()) {
+			System.out.println("Funcao de abrir nao e suportada.");
+			return;
+		} else {
+			Desktop desktop = Desktop.getDesktop();
+			if (file.exists()) {
+				desktop.open(file);
+			} else {
+				System.out.println("Arquivo nao encontrado.");
+			}
+		}
+	}
+	
+	public static ImplServer getImplServer() {
+		return b;
 	}
 }
