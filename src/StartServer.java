@@ -1,14 +1,15 @@
 import java.rmi.Naming;
 
-public class ServerBoard {
+public class StartServer {
 
-	public ServerBoard() {
+	public StartServer() {
 
 	}
 
 	public static void main(String args[]) {
 		try {
-			Board b = new Board();
+			Server b = new Server();
+			b.setArquivo("profile.jpg");
 			Naming.rebind("chat", b);
 		} catch (Exception e) {
 			System.out.println("Erro ao iniciar servidor.");

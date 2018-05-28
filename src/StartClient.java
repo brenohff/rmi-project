@@ -10,24 +10,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class ChatUI implements Constantes {
+public class StartClient implements Constantes {
 
-	private ChatClient user;
-	private static ChatUI chat;
-	private HashMap<String, IChatClient> cc;
+	private Client user;
+	private static StartClient chat;
+	private HashMap<String, ImplClient> cc;
 
-	public ChatUI(ChatClient user) {
+	public StartClient(Client user) {
 		this.user = user;
 	}
 
 	public static void main(String args[]) throws Exception {
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		IBoard b = conectar("chat");
+		ImplServer b = conectar("chat");
 
 		System.out.print("Insira seu usuario: ");
 		String nomeUsuario = input.readLine();
 		if (b.podeLogar(nomeUsuario)) {
-			chat = new ChatUI(new ChatClient(nomeUsuario));
+			chat = new StartClient(new Client(nomeUsuario));
 			chat.login(chat, b);
 			b.postMessage(chat.user.getNomeUsuario() + " entrou no chat/entrou", chat.user);
 		} else {
@@ -49,6 +49,9 @@ public class ChatUI implements Constantes {
 				case "/chatPrivado":
 					chat.usuariosOnline(b);
 					break;
+				case "/enviaArquivo":
+					chat.enviaArquivo(b);
+					break;
 				case "/sair":
 					b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
 					b.logout(chat.user.getNomeUsuario());
@@ -63,11 +66,12 @@ public class ChatUI implements Constantes {
 		}
 	}
 
-	private static IBoard conectar(String endpoint) throws MalformedURLException, RemoteException, NotBoundException {
-		return (IBoard) Naming.lookup(ENDPOINT + endpoint);
+	private static ImplServer conectar(String endpoint)
+			throws MalformedURLException, RemoteException, NotBoundException {
+		return (ImplServer) Naming.lookup(ENDPOINT + endpoint);
 	}
 
-	private void login(ChatUI chat, IBoard b) throws RemoteException {
+	private void login(StartClient chat, ImplServer b) throws RemoteException {
 		b.login(chat.user.getNomeUsuario(), chat.user);
 	}
 
@@ -80,14 +84,19 @@ public class ChatUI implements Constantes {
 		System.out.println("||--------------------------------------||");
 	}
 
-	private void usuariosOnline(IBoard b) throws RemoteException {
+	private void usuariosOnline(ImplServer b) throws RemoteException {
 		cc = b.getCC();
-		List<IChatClient> clients = new ArrayList<>();
+		List<ImplClient> clients = new ArrayList<>();
 		int count = 1;
-		for (Entry<String, IChatClient> usuario : cc.entrySet()) {
+		for (Entry<String, ImplClient> usuario : cc.entrySet()) {
 			clients.add(usuario.getValue());
 			System.out.println(count + " - " + usuario.getKey());
 			count++;
 		}
+	}
+
+	private void enviaArquivo(ImplServer b) throws RemoteException {
+		user.setNomeArquivo("imed");
+		b.login(user);
 	}
 }
