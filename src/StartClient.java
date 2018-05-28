@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 public class StartClient implements Constantes {
 
@@ -76,12 +77,13 @@ public class StartClient implements Constantes {
 	}
 
 	private void mostraMenu() {
-		System.out.println("||--------------------------------------||");
-		System.out.println("||/menu        -> Mostra menu           ||");
-		System.out.println("||/chatPublico -> Inicia o chat publico ||");
-		System.out.println("||/chatPrivado -> Inicia o chat privado ||");
-		System.out.println("||/sair        -> Sai do programa       ||");
-		System.out.println("||--------------------------------------||");
+		System.out.println("||---------------------------------------||");
+		System.out.println("||/menu         -> Mostra menu           ||");
+		System.out.println("||/chatPublico  -> Inicia o chat publico ||");
+		System.out.println("||/chatPrivado  -> Inicia o chat privado ||");
+		System.out.println("||/enviaArquivo -> Enviar arquivo        ||");
+		System.out.println("||/sair         -> Sai do programa       ||");
+		System.out.println("||---------------------------------------||");
 	}
 
 	private void usuariosOnline(ImplServer b) throws RemoteException {
@@ -95,8 +97,11 @@ public class StartClient implements Constantes {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	private void enviaArquivo(ImplServer b) throws RemoteException {
-		user.setNomeArquivo("imed");
-		b.login(user);
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Insira o path do arquivo: ");
+
+		b.enviaArquivo(user, scanner.nextLine());
 	}
 }

@@ -11,7 +11,6 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 	private static final long serialVersionUID = -5078513634955730630L;
 
 	private HashMap<String, ImplClient> cc = new HashMap<String, ImplClient>();
-	private String arquivo = "";
 
 	public Server() throws RemoteException {
 	}
@@ -63,26 +62,24 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 
 	@Override
 	@SuppressWarnings("resource")
-	public boolean login(ImplClient c) throws RemoteException {
+	public boolean enviaArquivo(ImplClient c, String path) throws RemoteException {
 		try {
-			File arq = new File(arquivo);
+			File arq = new File(path.replace("\\", "/"));
 			FileInputStream in = new FileInputStream(arq);
 			byte[] mydata = new byte[1024 * 1024];
 			int mylen = in.read(mydata);
 			while (mylen > 0) {
 				c.enviaArquivo(arq.getName(), mydata, mylen);
 				mylen = in.read(mydata);
+				System.out.printf("%s esta enviando um arquivo.\n", c.getNomeUsuario());
 			}
+			System.out.printf("%s terminou de enviar um arquivo.\n", c.getNomeUsuario());
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
 
 		return true;
-	}
-
-	public void setArquivo(String arquivo) {
-		this.arquivo = arquivo;
 	}
 
 }

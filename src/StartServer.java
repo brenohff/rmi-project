@@ -9,7 +9,6 @@ public class StartServer {
 	public static void main(String args[]) {
 		try {
 			Server b = new Server();
-			b.setArquivo("profile.jpg");
 			Naming.rebind("chat", b);
 		} catch (Exception e) {
 			System.out.println("Erro ao iniciar servidor.");

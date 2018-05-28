@@ -8,7 +8,6 @@ public class Client extends UnicastRemoteObject implements ImplClient {
 	private static final long serialVersionUID = 6322158345847138669L;
 
 	private String nomeUsuario;
-	private String nomeArquivo;
 
 	public Client(String nomeUsuario) throws RemoteException {
 		this.nomeUsuario = nomeUsuario;
@@ -33,20 +32,11 @@ public class Client extends UnicastRemoteObject implements ImplClient {
 			out.write(data, 0, len);
 			out.flush();
 			out.close();
-			System.out.println("Done writing data...");
+			System.out.println("Arquivo enviado.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return true;
-	}
-
-	@Override
-	public String getNomeArquivo() throws RemoteException {
-		return nomeArquivo;
-	}
-
-	public void setNomeArquivo(String nomeArquivo) {
-		this.nomeArquivo = nomeArquivo;
 	}
 
 }

@@ -8,6 +8,4 @@ public interface ImplClient extends Remote {
 	public String getNomeUsuario() throws RemoteException;
 
 	public boolean enviaArquivo(String filename, byte[] data, int len) throws RemoteException;
-
-	public String getNomeArquivo() throws RemoteException;
 }

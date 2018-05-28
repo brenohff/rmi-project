@@ -14,5 +14,5 @@ public interface ImplServer extends Remote {
 	
 	public HashMap<String, ImplClient> getCC() throws RemoteException;
 	
-	public boolean login(ImplClient c) throws RemoteException;
+	public boolean enviaArquivo(ImplClient c, String path) throws RemoteException;
 }
