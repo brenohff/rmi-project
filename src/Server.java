@@ -3,9 +3,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class Server extends UnicastRemoteObject implements ImplServer {
 	private static final long serialVersionUID = -5078513634955730630L;
@@ -17,19 +16,37 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 
 	@Override
 	public void postMessage(String msg, ImplClient userWhoSent) throws RemoteException {
-		Collection<ImplClient> usersOnline = cc.values();
-		Iterator<ImplClient> iter = usersOnline.iterator();
 
-		while (iter.hasNext()) {
-			ImplClient icc = (ImplClient) iter.next();
-			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
+		System.out.println("Quantidadede de usuarios conectados: " + cc.size());
+
+		for (Entry<String, ImplClient> usuarios : cc.entrySet()) {
+			ImplClient icc = usuarios.getValue();
+
+			if (!(userWhoSent == icc)) {
 				if (msg.endsWith("saiu do chat/deixou") || msg.endsWith("entrou no chat/entrou")) {
 					icc.viewBoardMsg(msg.substring(0, msg.length() - 7));
 				} else {
 					icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
 				}
 			}
+
 		}
+
+//		Collection<ImplClient> usersOnline = cc.values();
+//		Iterator<ImplClient> iter = usersOnline.iterator();
+//
+//		while (iter.hasNext()) {
+//			ImplClient icc = (ImplClient) iter.next();
+//			System.out.println(icc.getNomeUsuario());
+//			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
+//				if (msg.endsWith("saiu do chat/deixou") || msg.endsWith("entrou no chat/entrou")) {
+//					icc.viewBoardMsg(msg.substring(0, msg.length() - 7));
+//				} else {
+//					icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
+//				}
+//			}
+//		}
+		
 	}
 
 	@Override
@@ -80,6 +97,11 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void zerarCC() throws RemoteException {
+		cc.clear();
 	}
 
 }

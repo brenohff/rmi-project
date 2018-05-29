@@ -21,8 +21,6 @@ public class StartClient implements Constantes {
 	private static StartClient chat;
 	private HashMap<String, ImplClient> cc;
 	private static ImplServer b;
-	
-	private static String teste = "";
 
 	public StartClient(Client user) {
 		this.user = user;
@@ -30,17 +28,20 @@ public class StartClient implements Constantes {
 
 	public static void main(String args[]) throws Exception {
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		b = conectar("chat");
 
-		System.out.print("Insira seu usuario: ");
-		String nomeUsuario = input.readLine();
-		if (b.podeLogar(nomeUsuario)) {
-			chat = new StartClient(new Client(nomeUsuario));
-			chat.login(chat, b);
-			b.postMessage(chat.user.getNomeUsuario() + " entrou no chat/entrou", chat.user);
-		} else {
-			System.out.println("Encerrando sessao... (ja existe um usuario com este nome na sessao)");
-			System.exit(1);
+		if (b == null) {
+			b = conectar("chat");
+			
+			System.out.print("Insira seu usuario: ");
+			String nomeUsuario = input.readLine();
+			if (b.podeLogar(nomeUsuario)) {
+				chat = new StartClient(new Client(nomeUsuario));
+				chat.login(chat, b);
+				b.postMessage(chat.user.getNomeUsuario() + " entrou no chat/entrou", chat.user);
+			} else {
+				System.out.println("Encerrando sessao... (ja existe um usuario com este nome na sessao)");
+				System.exit(1);
+			}			
 		}
 
 		while (true) {
@@ -70,7 +71,6 @@ public class StartClient implements Constantes {
 					System.exit(1);
 					break;
 				default:
-					System.out.println(teste);
 					b.postMessage(mensagem, chat.user);
 					break;
 				}
@@ -78,9 +78,9 @@ public class StartClient implements Constantes {
 		}
 	}
 
-	private static ImplServer conectar(String endpoint) throws MalformedURLException, RemoteException, NotBoundException {
-		teste = ENDPOINT + endpoint;
-		return (ImplServer) Naming.lookup(ENDPOINT + endpoint);
+	private static ImplServer conectar(String endpoint)
+			throws MalformedURLException, RemoteException, NotBoundException {
+		return (ImplServer) Naming.lookup("rmi://192.168.0.22/" + endpoint);
 	}
 
 	private void login(StartClient chat, ImplServer b) throws RemoteException {
@@ -93,12 +93,13 @@ public class StartClient implements Constantes {
 		System.out.println("||/chatPublico  -> Inicia o chat publico ||");
 		System.out.println("||/chatPrivado  -> Inicia o chat privado ||");
 		System.out.println("||/enviaArquivo -> Enviar arquivo        ||");
-		System.out.println("||/abreArquivo   -> Abre arquivo         ||");
+		System.out.println("||/abreArquivo  -> Abre arquivo          ||");
 		System.out.println("||/sair         -> Sai do programa       ||");
 		System.out.println("||---------------------------------------||");
 	}
 
-	private void usuariosOnline(ImplServer b) throws RemoteException, MalformedURLException, NotBoundException, AlreadyBoundException {
+	private void usuariosOnline(ImplServer b)
+			throws RemoteException, MalformedURLException, NotBoundException, AlreadyBoundException {
 		cc = b.getCC();
 		List<ImplClient> clients = new ArrayList<>();
 		int count = 1;
@@ -107,31 +108,44 @@ public class StartClient implements Constantes {
 			System.out.println(count + " - " + usuario.getKey());
 			count++;
 		}
-		
+
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Insira o numero do usuario que voce deseja conversar: ");
 		Integer numero = scanner.nextInt() - 1;
-		
+
 		try {
-			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
-			chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
-			chat.login(chat, b);
-		} catch (Exception e) {
-			Naming.rebind(clients.get(numero).getNomeUsuario().toLowerCase(), new Server());
 			b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
 			b.logout(chat.user.getNomeUsuario());
 			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
-			chat = new StartClient(new Client(chat.user.getNomeUsuario()));
-			chat.login(chat, b);
+			b.zerarCC();
+			chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
+			login(chat, b);
+		} catch (Exception e) {
+			try {
+				b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
+				b.logout(chat.user.getNomeUsuario());
+				b = conectar(chat.user.getNomeUsuario().toLowerCase());
+				b.zerarCC();
+				chat = new StartClient(new Client(chat.user.getNomeUsuario()));
+				login(chat, b);
+			} catch (Exception e2) {
+				Naming.rebind(clients.get(numero).getNomeUsuario().toLowerCase(), new Server());
+				b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
+				b.logout(chat.user.getNomeUsuario());
+				b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
+				b.zerarCC();
+				chat = new StartClient(new Client(chat.user.getNomeUsuario()));
+				login(chat, b);
+				return;
+			}
 		}
-		
 	}
 
 	@SuppressWarnings("resource")
 	private void enviaArquivo(ImplServer b) throws RemoteException {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Insira o path do arquivo: ");
-		
+
 		String pathCompleto = scanner.nextLine();
 
 		b.enviaArquivo(user, pathCompleto);
@@ -158,7 +172,7 @@ public class StartClient implements Constantes {
 			}
 		}
 	}
-	
+
 	public static ImplServer getImplServer() {
 		return b;
 	}
