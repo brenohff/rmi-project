@@ -16,8 +16,7 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 
 	@Override
 	public void postMessage(String msg, ImplClient userWhoSent) throws RemoteException {
-
-		System.out.println("Quantidadede de usuarios conectados: " + cc.size());
+		System.setProperty("java.rmi.server.hostname", "10.61.16.36");
 
 		for (Entry<String, ImplClient> usuarios : cc.entrySet()) {
 			ImplClient icc = usuarios.getValue();
