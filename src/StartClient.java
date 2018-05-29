@@ -31,7 +31,7 @@ public class StartClient implements Constantes {
 
 		if (b == null) {
 			b = conectar("chat");
-			
+
 			System.out.print("Insira seu usuario: ");
 			String nomeUsuario = input.readLine();
 			if (b.podeLogar(nomeUsuario)) {
@@ -41,7 +41,7 @@ public class StartClient implements Constantes {
 			} else {
 				System.out.println("Encerrando sessao... (ja existe um usuario com este nome na sessao)");
 				System.exit(1);
-			}			
+			}
 		}
 
 		while (true) {
@@ -80,7 +80,7 @@ public class StartClient implements Constantes {
 
 	private static ImplServer conectar(String endpoint)
 			throws MalformedURLException, RemoteException, NotBoundException {
-		return (ImplServer) Naming.lookup("rmi://192.168.0.22/" + endpoint);
+		return (ImplServer) Naming.lookup("rmi://192.168.56.1/" + endpoint);
 	}
 
 	private void login(StartClient chat, ImplServer b) throws RemoteException {
@@ -88,6 +88,7 @@ public class StartClient implements Constantes {
 	}
 
 	private void mostraMenu() {
+		System.out.println("");
 		System.out.println("||---------------------------------------||");
 		System.out.println("||/menu         -> Mostra menu           ||");
 		System.out.println("||/chatPublico  -> Inicia o chat publico ||");
@@ -96,50 +97,84 @@ public class StartClient implements Constantes {
 		System.out.println("||/abreArquivo  -> Abre arquivo          ||");
 		System.out.println("||/sair         -> Sai do programa       ||");
 		System.out.println("||---------------------------------------||");
+		System.out.println("");
 	}
 
-	private void usuariosOnline(ImplServer b)
-			throws RemoteException, MalformedURLException, NotBoundException, AlreadyBoundException {
+	private void usuariosOnline(ImplServer b) throws RemoteException {
 		cc = b.getCC();
 		List<ImplClient> clients = new ArrayList<>();
 		int count = 1;
 		for (Entry<String, ImplClient> usuario : cc.entrySet()) {
-			clients.add(usuario.getValue());
-			System.out.println(count + " - " + usuario.getKey());
-			count++;
+			if (!user.getNomeUsuario().equals(usuario.getValue().getNomeUsuario())) {
+				clients.add(usuario.getValue());
+				System.out.println(count + " - " + usuario.getKey());
+				count++;
+			}
 		}
 
 		Scanner scanner = new Scanner(System.in);
-		System.out.print("Insira o numero do usuario que voce deseja conversar: ");
+		System.out.print("Insira o numero do usuario que voce deseja enviar msg privada: ");
 		Integer numero = scanner.nextInt() - 1;
 
-		try {
-			b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
-			b.logout(chat.user.getNomeUsuario());
-			b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
-			b.zerarCC();
-			chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
-			login(chat, b);
-		} catch (Exception e) {
-			try {
-				b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
-				b.logout(chat.user.getNomeUsuario());
-				b = conectar(chat.user.getNomeUsuario().toLowerCase());
-				b.zerarCC();
-				chat = new StartClient(new Client(chat.user.getNomeUsuario()));
-				login(chat, b);
-			} catch (Exception e2) {
-				Naming.rebind(clients.get(numero).getNomeUsuario().toLowerCase(), new Server());
-				b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou", chat.user);
-				b.logout(chat.user.getNomeUsuario());
-				b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
-				b.zerarCC();
-				chat = new StartClient(new Client(chat.user.getNomeUsuario()));
-				login(chat, b);
-				return;
-			}
-		}
+		b.postPrivateMessage(leMsg(clients.get(numero)), clients.get(numero), user);
+
 	}
+
+	private String leMsg(ImplClient client) throws RemoteException {
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Insira a msg a ser enviada no privado para o " + client.getNomeUsuario() + ":");
+		String msgPrivada = scanner.nextLine();
+
+		return msgPrivada;
+	}
+
+	// private void usuariosOnline(ImplServer b)
+	// throws RemoteException, MalformedURLException, NotBoundException,
+	// AlreadyBoundException {
+	// cc = b.getCC();
+	// List<ImplClient> clients = new ArrayList<>();
+	// int count = 1;
+	// for (Entry<String, ImplClient> usuario : cc.entrySet()) {
+	// clients.add(usuario.getValue());
+	// System.out.println(count + " - " + usuario.getKey());
+	// count++;
+	// }
+	//
+	// Scanner scanner = new Scanner(System.in);
+	// System.out.print("Insira o numero do usuario que voce deseja conversar: ");
+	// Integer numero = scanner.nextInt() - 1;
+	//
+	// try {
+	// b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou",
+	// chat.user);
+	// b.logout(chat.user.getNomeUsuario());
+	// b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
+	// b.zerarCC();
+	// chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
+	// login(chat, b);
+	// } catch (Exception e) {
+	// try {
+	// b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou",
+	// chat.user);
+	// b.logout(chat.user.getNomeUsuario());
+	// b = conectar(chat.user.getNomeUsuario().toLowerCase());
+	// b.zerarCC();
+	// chat = new StartClient(new Client(chat.user.getNomeUsuario()));
+	// login(chat, b);
+	// } catch (Exception e2) {
+	// Naming.rebind(clients.get(numero).getNomeUsuario().toLowerCase(), new
+	// Server());
+	// b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou",
+	// chat.user);
+	// b.logout(chat.user.getNomeUsuario());
+	// b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
+	// b.zerarCC();
+	// chat = new StartClient(new Client(chat.user.getNomeUsuario()));
+	// login(chat, b);
+	// return;
+	// }
+	// }
+	// }
 
 	@SuppressWarnings("resource")
 	private void enviaArquivo(ImplServer b) throws RemoteException {
@@ -158,7 +193,10 @@ public class StartClient implements Constantes {
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Insira o path do arquivo: ");
 
-		File file = new File(scanner.nextLine());
+		String path = scanner.nextLine();
+		
+		File file = new File(path);
+		File file2 = new File("..\\\\" + path);
 
 		if (!Desktop.isDesktopSupported()) {
 			System.out.println("Funcao de abrir nao e suportada.");
@@ -167,6 +205,8 @@ public class StartClient implements Constantes {
 			Desktop desktop = Desktop.getDesktop();
 			if (file.exists()) {
 				desktop.open(file);
+			} else if (file2.exists()) {
+				desktop.open(file2);
 			} else {
 				System.out.println("Arquivo nao encontrado.");
 			}

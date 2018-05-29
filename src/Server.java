@@ -29,24 +29,19 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 					icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
 				}
 			}
-
 		}
+	}
 
-//		Collection<ImplClient> usersOnline = cc.values();
-//		Iterator<ImplClient> iter = usersOnline.iterator();
-//
-//		while (iter.hasNext()) {
-//			ImplClient icc = (ImplClient) iter.next();
-//			System.out.println(icc.getNomeUsuario());
-//			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
-//				if (msg.endsWith("saiu do chat/deixou") || msg.endsWith("entrou no chat/entrou")) {
-//					icc.viewBoardMsg(msg.substring(0, msg.length() - 7));
-//				} else {
-//					icc.viewBoardMsg(userWhoSent.getNomeUsuario() + " disse: " + msg);
-//				}
-//			}
-//		}
-		
+	@Override
+	public void postPrivateMessage(String msg, ImplClient whoWantsToSend, ImplClient userWhoSend) throws RemoteException {
+
+		for (Entry<String, ImplClient> usuario : cc.entrySet()) {
+			ImplClient icc = usuario.getValue();
+
+			if (whoWantsToSend.getNomeUsuario().equals(icc.getNomeUsuario())) {
+				icc.viewBoardMsg(userWhoSend.getNomeUsuario() + " disse (privado): " + msg);
+			}
+		}
 	}
 
 	@Override
