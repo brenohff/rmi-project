@@ -115,65 +115,10 @@ public class StartClient{
 		System.out.print("Insira o numero do usuario que voce deseja enviar msg privada: ");
 		Integer numero = scanner.nextInt() - 1;
 
-		b.postPrivateMessage(leMsg(clients.get(numero)), clients.get(numero), user);
+		System.out.print("Insira a msg a ser enviada no privado para o " + clients.get(numero).getNomeUsuario() + ":");
+		b.postPrivateMessage(scanner.nextLine(), clients.get(numero), user);
 
 	}
-
-	private String leMsg(ImplClient client) throws RemoteException {
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Insira a msg a ser enviada no privado para o " + client.getNomeUsuario() + ":");
-		String msgPrivada = scanner.nextLine();
-
-		return msgPrivada;
-	}
-
-	// private void usuariosOnline(ImplServer b)
-	// throws RemoteException, MalformedURLException, NotBoundException,
-	// AlreadyBoundException {
-	// cc = b.getCC();
-	// List<ImplClient> clients = new ArrayList<>();
-	// int count = 1;
-	// for (Entry<String, ImplClient> usuario : cc.entrySet()) {
-	// clients.add(usuario.getValue());
-	// System.out.println(count + " - " + usuario.getKey());
-	// count++;
-	// }
-	//
-	// Scanner scanner = new Scanner(System.in);
-	// System.out.print("Insira o numero do usuario que voce deseja conversar: ");
-	// Integer numero = scanner.nextInt() - 1;
-	//
-	// try {
-	// b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou",
-	// chat.user);
-	// b.logout(chat.user.getNomeUsuario());
-	// b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
-	// b.zerarCC();
-	// chat = new StartClient(new Client(clients.get(numero).getNomeUsuario()));
-	// login(chat, b);
-	// } catch (Exception e) {
-	// try {
-	// b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou",
-	// chat.user);
-	// b.logout(chat.user.getNomeUsuario());
-	// b = conectar(chat.user.getNomeUsuario().toLowerCase());
-	// b.zerarCC();
-	// chat = new StartClient(new Client(chat.user.getNomeUsuario()));
-	// login(chat, b);
-	// } catch (Exception e2) {
-	// Naming.rebind(clients.get(numero).getNomeUsuario().toLowerCase(), new
-	// Server());
-	// b.postMessage(chat.user.getNomeUsuario() + " saiu do chat/deixou",
-	// chat.user);
-	// b.logout(chat.user.getNomeUsuario());
-	// b = conectar(clients.get(numero).getNomeUsuario().toLowerCase());
-	// b.zerarCC();
-	// chat = new StartClient(new Client(chat.user.getNomeUsuario()));
-	// login(chat, b);
-	// return;
-	// }
-	// }
-	// }
 
 	@SuppressWarnings("resource")
 	private void enviaArquivo(ImplServer b) throws RemoteException {
