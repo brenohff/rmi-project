@@ -3,7 +3,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class Server extends UnicastRemoteObject implements ImplServer {
@@ -16,12 +18,13 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 
 	@Override
 	public void postMessage(String msg, ImplClient userWhoSent) throws RemoteException {
-		System.setProperty("java.rmi.server.hostname", "10.61.16.36");
+		Collection<ImplClient> usersOnline = cc.values();
+		Iterator<ImplClient> iter = usersOnline.iterator();
 
-		for (Entry<String, ImplClient> usuarios : cc.entrySet()) {
-			ImplClient icc = usuarios.getValue();
-
-			if (!(userWhoSent == icc)) {
+		while (iter.hasNext()) {
+			ImplClient icc = (ImplClient) iter.next();
+			System.out.println(icc.getNomeUsuario());
+			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
 				if (msg.endsWith("saiu do chat/deixou") || msg.endsWith("entrou no chat/entrou")) {
 					icc.viewBoardMsg(msg.substring(0, msg.length() - 7));
 				} else {
@@ -32,7 +35,8 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 	}
 
 	@Override
-	public void postPrivateMessage(String msg, ImplClient whoWantsToSend, ImplClient userWhoSend) throws RemoteException {
+	public void postPrivateMessage(String msg, ImplClient whoWantsToSend, ImplClient userWhoSend)
+			throws RemoteException {
 
 		for (Entry<String, ImplClient> usuario : cc.entrySet()) {
 			ImplClient icc = usuario.getValue();

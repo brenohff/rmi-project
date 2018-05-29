@@ -27,7 +27,6 @@ public class StartClient implements Constantes {
 
 	public static void main(String args[]) throws Exception {
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		System.setProperty("java.rmi.server.hostname", "10.61.16.36");
 
 		if (b == null) {
 			b = conectar("chat");
@@ -80,7 +79,7 @@ public class StartClient implements Constantes {
 
 	private static ImplServer conectar(String endpoint)
 			throws MalformedURLException, RemoteException, NotBoundException {
-		return (ImplServer) Naming.lookup("rmi://10.61.16.36:1099/" + endpoint);
+		return (ImplServer) Naming.lookup("rmi://10.61.16.36/" + endpoint);
 	}
 
 	private void login(StartClient chat, ImplServer b) throws RemoteException {
