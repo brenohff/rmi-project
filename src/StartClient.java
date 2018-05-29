@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
-public class StartClient implements Constantes {
+public class StartClient{
 
 	private Client user;
 	private static StartClient chat;
