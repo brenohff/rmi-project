@@ -116,8 +116,15 @@ public class StartClient{
 		Integer numero = scanner.nextInt() - 1;
 
 		System.out.print("Insira a msg a ser enviada no privado para o " + clients.get(numero).getNomeUsuario() + ":");
-		b.postPrivateMessage(scanner.nextLine(), clients.get(numero), user);
+		b.postPrivateMessage(leMsg(clients.get(numero)), clients.get(numero), user);
 
+	}
+
+	private String leMsg(ImplClient client) throws RemoteException {
+		Scanner scanner = new Scanner(System.in);
+		String msgPrivada = scanner.nextLine();
+
+		return msgPrivada;
 	}
 
 	@SuppressWarnings("resource")

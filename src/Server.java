@@ -23,7 +23,6 @@ public class Server extends UnicastRemoteObject implements ImplServer {
 
 		while (iter.hasNext()) {
 			ImplClient icc = (ImplClient) iter.next();
-			System.out.println(icc.getNomeUsuario());
 			if (!userWhoSent.equals(cc.get(icc.getNomeUsuario()))) {
 				if (msg.endsWith("saiu do chat/deixou") || msg.endsWith("entrou no chat/entrou")) {
 					icc.viewBoardMsg(msg.substring(0, msg.length() - 7));
