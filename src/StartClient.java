@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -28,6 +27,7 @@ public class StartClient implements Constantes {
 
 	public static void main(String args[]) throws Exception {
 		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+		System.setProperty("java.rmi.server.hostname", "10.61.16.36");
 
 		if (b == null) {
 			b = conectar("chat");
@@ -80,7 +80,7 @@ public class StartClient implements Constantes {
 
 	private static ImplServer conectar(String endpoint)
 			throws MalformedURLException, RemoteException, NotBoundException {
-		return (ImplServer) Naming.lookup("rmi://192.168.56.1/" + endpoint);
+		return (ImplServer) Naming.lookup("rmi://10.61.16.36:1099/" + endpoint);
 	}
 
 	private void login(StartClient chat, ImplServer b) throws RemoteException {
