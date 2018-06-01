@@ -10,7 +10,7 @@ Projeto realizado para demonstrar funcionamento do RMI (Remote Method Invocation
 1. Clonar arquivo ou realizar download do .zip;
 2. Abrir diretório rmi-project/src;
 3. Verificar ip da máquina através do cmd, utilizando o código: `ipconfig`;
-4. Alterar o ip na classe `StartClient.java`;
+4. Alterar o ip na classe `StartClient.java` e `StartServer.java`;
 5. Através do cmd ou git bash, compilar classes java utilizando o comando: `javac *.java`;
 6. Inicializar servidor: `java StartServer`;
 7. Inicializar cliente: `java StartClient`.
